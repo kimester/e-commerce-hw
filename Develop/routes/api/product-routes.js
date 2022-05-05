@@ -1,4 +1,5 @@
 const router = require('express').Router();
+const res = require('express/lib/response');
 const { Product, Category, Tag, ProductTag } = require('../../models');
 
 // The `/api/products` endpoint
@@ -7,21 +8,31 @@ const { Product, Category, Tag, ProductTag } = require('../../models');
 // /api/products/
 router.get('/', (req, res) => {
   // find all products
-  Product.findAll().then((productData) => {
-    res.status(200).json(productData)
+  Product.findAll({
+ // be sure to include its associated Category and Tag data
+  include: [Category, Tag]
+  }) 
+  .then(dbProducts => {
+    res.json(dbProducts);
   })
-  .catch((error)=>{
-    res.status(500).json(error)
-  })
-  // be sure to include its associated Category and Tag data
+  .catch((error) => {
+    console.log(error);  
+      res.status(500).json({ msg:"an error occured", error });
+  });
 });
 
 // get one product
 router.get('/:id', (req, res) => {
-  // find a single product by its `id`
-  Product.findByPk(req.params.id).then((productData) => {
-    res.json(productData);
-  // be sure to include its associated Category and Tag data
+  Product.findByPk(req.params.id, {
+// be sure to include its associated Category and Tag data
+include: [Category, Tag]
+  })
+  .then((dbProductData) => {
+    res.json(dbProductData);
+  })
+  .catch((error) => {
+    console.log(error);  
+      res.status(500).json({ msg:"an error occured", error });
 });
 
 // create new product
@@ -34,15 +45,6 @@ router.post('/', (req, res) => {
       tagIds: [1, 2, 3, 4]
     }
   */
-    router.post('/', (req, res) => {
-      Product.create(req.body)
-        .then((newProduct) => {
-          res.json(newProduct);
-        })
-        .catch((err) => {
-          res.json(err);
-        });
-    });
   Product.create(req.body)
     .then((product) => {
       // if there's product tags, we need to create pairings to bulk create in the ProductTag model
@@ -63,7 +65,7 @@ router.post('/', (req, res) => {
       console.log(err);
       res.status(400).json(err);
     });
-});
+
 
 // update product
 router.put('/:id', (req, res) => {
@@ -109,20 +111,18 @@ router.put('/:id', (req, res) => {
 
 router.delete('/:id', (req, res) => {
   // delete one product by its `id` value
-  try {
-    const userData = await Product.destroy({
-      where: {
-        id: req.params.id,
-      },
+  Product.destroy({
+    where: {
+      isbn: req.params.isbn,
+    },
+  })
+    .then((deletedProduct) => {
+      res.json(deletedProduct);
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).json({ msg: "an error occured", err});
     });
-    if (!userData) {
-      res.status(404).json({ message: 'No user with this id!' });
-      return;
-    }
-    res.status(200).json(userData);
-  } catch (err) {
-    res.status(500).json(err);
-  }
 });
 
 module.exports = router;

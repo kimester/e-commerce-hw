@@ -31,18 +31,20 @@ router.post('/', (req, res) => {
 
 router.put('/:id', (req, res) => {
   // update a category by its `id` value
-  where: {
-    book_id: req.params.category_id,
-  },
+  Category.update({
 
+    where: {
+    category_id: req.params.category_id,
+    },
 
-  .then((updatedCategory) => {
+    // Gets category based on the id given in the request parameters
+    .then((updatedCategory) => {
     res.json(updatedCategory);
-  })
-  .catch((err) => {
+    })
+    .catch((err) => {
     console.log(err);
     res.json(err);
-  });
+    }),
 });
 
 router.delete('/:id', (req, res) => {

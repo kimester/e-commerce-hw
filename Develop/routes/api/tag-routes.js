@@ -25,7 +25,7 @@ router.get('/:id', (req, res) => {
 router.post('/', (req, res) => {
   // create a new tag
   Tag.create(req.body)
-  .then((newTag) => {
+.then((newTag) => {
     res.json(newTag);
   })
   .catch((err) => {
@@ -42,13 +42,13 @@ router.put('/:id', (req, res) => {
     },
 
     // Gets category based on the id given in the request parameters
-    .then((updatedTag) => {
+   }) .then((updatedTag) => {
     res.json(updatedTag);
     })
     .catch((err) => {
     console.log(err);
     res.json(err);
-    }),
+    })
 });
 
 router.delete('/:id', (req, res) => {

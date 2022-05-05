@@ -124,5 +124,6 @@ router.delete('/:id', (req, res) => {
       res.status(500).json({ msg: "an error occured", err});
     });
 });
-
+});
+})
 module.exports = router;

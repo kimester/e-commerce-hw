@@ -7,15 +7,15 @@ router.get('/', (req, res) => {
   // find all tags
     Tag.findAll({
     // be sure to include its associated Product data
-    include: [Product, ProductTag]
-  })
-    .then(dbTags => {
+    include:[Product]
+
+  }).then(dbTags => {
       res.json(dbTags);
     })
-    .catch(err=>{
+    .catch(err => {
       console.log(err);
       res.status(500).json({ msg: "an error occured", err });
-    });
+    })
   
 });
 
@@ -23,9 +23,9 @@ router.get('/:id', (req, res) => {
   // find a single tag by its `id`
   Tag.findByPk(req.params.id, {
     // be sure to include its associated Product data
-  include: [Product, ProductTag]
-  })
-  .then((dbTags) => {
+  include: [Product]
+  
+  }).then((dbTags) => {
     res.json(dbTags);
   }) 
   .catch((err)=>{
@@ -49,7 +49,7 @@ router.post('/', (req, res) => {
 
 router.put('/:id', (req, res) => {
   // update a tag's name by its `id` value
-  Tag.update({
+  Tag.update(req.body, {
 
     where: {
     id: req.params.id,

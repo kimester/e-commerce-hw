@@ -5,21 +5,34 @@ const { Tag, Product, ProductTag } = require('../../models');
 
 router.get('/', (req, res) => {
   // find all tags
-    Tag.findAll().then((tagData) => {
-      res.json(tagData);
+    Tag.findAll({
+    // be sure to include its associated Product data
+    include: [Product, ProductTag]
+  })
+    .then(dbTags => {
+      res.json(dbTags);
     })
-    .catch((error)=>{
-      res.status(500).json(error)
-    })
-  // be sure to include its associated Product data
+    .catch(err=>{
+      console.log(err);
+      res.status(500).json({ msg: "an error occured", err });
+    });
+  
 });
 
 router.get('/:id', (req, res) => {
   // find a single tag by its `id`
-  Tag.findByPk(req.params.id).then((tagData) => {
-    res.json(tagData);
+  Tag.findByPk(req.params.id, {
+    // be sure to include its associated Product data
+  include: [Product, ProductTag]
+  })
+  .then((dbTags) => {
+    res.json(dbTags);
+  }) 
+  .catch((err)=>{
+    console.log(err);
+    res.status(500).json({ msg: "an error occured", err });
   });
-  // be sure to include its associated Product data
+  
 });
 
 router.post('/', (req, res) => {
@@ -29,7 +42,8 @@ router.post('/', (req, res) => {
     res.json(newTag);
   })
   .catch((err) => {
-    res.json(err);
+    console.log(err);
+   res.status(500).json({ msg: "an error occured", err });
   });
 });
 
@@ -38,30 +52,33 @@ router.put('/:id', (req, res) => {
   Tag.update({
 
     where: {
-    category_id: req.params.category_id,
-    },
+    id: req.params.id,
+    }
 
     // Gets category based on the id given in the request parameters
    }) .then((updatedTag) => {
     res.json(updatedTag);
     })
     .catch((err) => {
-    console.log(err);
-    res.json(err);
-    })
+      console.log(err);
+     res.status(500).json({ msg: "an error occured", err });
+    });
 });
 
 router.delete('/:id', (req, res) => {
   // delete on tag by its `id` value
-  router.destroy({
+  Tag.destroy({
     where: {
-      tag_id: req.params.tag_id,
+     id: req.params.id,
     },
   })
     .then((deletedTag) => {
       res.json(deletedTag);
     })
-    .catch((err) => res.json(err));
+    .catch((err) => {
+      console.log(err);
+     res.status(500).json({ msg: "an error occured", err });
+    });
 });
 
 module.exports = router;

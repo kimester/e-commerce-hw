@@ -3,7 +3,7 @@
   
   ## Description 
   A database for showing product informationinto different categories. Including their associated tags.
-
+  Please see attached photos for screen shots of the rests run in Insomnia
 
   ## Table of Contents
   * [Installation](#installation)
